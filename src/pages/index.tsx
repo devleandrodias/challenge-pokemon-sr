@@ -1,32 +1,17 @@
 import { GetServerSideProps } from "next";
+
 import axios from "axios";
 
-interface IPokemonsProps {
-  pokemons: IPokemonResult[];
+import PokemonGrid from "../components/pokemon-grid/pokemon-grid.component";
+
+import { IPokemon } from "../interfaces/pokemon.interface";
+import { IPokemonGridProps } from "../components/pokemon-grid/pokemon-grid.interface";
+
+export default function Pokemons({ pokemons }: IPokemonGridProps) {
+  return <PokemonGrid pokemons={pokemons} />;
 }
 
-interface IPokemonResult {
-  name: string;
-  url: string;
-  imageUrl: string;
-}
-
-export default function Pokemons({ pokemons }: IPokemonsProps) {
-  return (
-    <section>
-      {pokemons.map(({ name, url, imageUrl }) => {
-        return (
-          <div key={url}>
-            <h1>{name}</h1>
-            <img src={imageUrl} alt="pokemon"></img>
-          </div>
-        );
-      })}
-    </section>
-  );
-}
-
-export const getServerSideProps: GetServerSideProps<IPokemonsProps> = async () => {
+export const getServerSideProps: GetServerSideProps<IPokemonGridProps> = async () => {
   const apiPokemon = axios.create({
     baseURL: process.env.NEXT_PUBLIC_POKEMON_API,
   });
@@ -35,7 +20,7 @@ export const getServerSideProps: GetServerSideProps<IPokemonsProps> = async () =
     data: { results },
   } = await apiPokemon.get("pokemon");
 
-  const pokemons: IPokemonResult[] = [];
+  const pokemons: IPokemon[] = [];
 
   for (let index = 0; index < results.length; index++) {
     const { name, url } = results[index];
